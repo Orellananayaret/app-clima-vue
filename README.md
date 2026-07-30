@@ -70,4 +70,4 @@ Se muestra cuando el usuario ingresa una ruta que no existe.
 Clonar el repositorio:
 
 ```bash
-git clone URL-DEL-REPOSITORIO
+https://orellananayaret.github.io/app-clima-vue/
