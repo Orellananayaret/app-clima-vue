@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '@/views/HomeView.vue'
 import PlaceDetailView from '@/views/PlaceDetailView.vue'
+import FavoritesView from '@/views/FavoritesView.vue'
+import PreferencesView from '@/views/PreferencesView.vue'
+import PlaceDetailView from '@/views/PlaceDetailView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 
 const routes = [
