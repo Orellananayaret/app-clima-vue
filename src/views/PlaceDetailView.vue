@@ -279,4 +279,40 @@ export default {
       </router-link>
     </section>
   </main>
+
+  <button
+      v-if="isAuthenticated"
+      @click="addFavorite"
+    >
+      Agregar a favoritos
+    </button>
 </template>
+<script>
+export default {
+  name: 'PlaceDetailView',
+
+  data() {
+    return {
+      place: {
+        name: 'Santiago',
+        description: 'Clima de Santiago'
+      }
+    }
+  },
+
+  computed: {
+    isAuthenticated() {
+      return this.$store.getters['auth/isAuthenticated']
+    }
+  },
+
+  methods: {
+    addFavorite() {
+      this.$store.dispatch(
+        'auth/addFavorite',
+        this.place.name
+      )
+    }
+  }
+}
+</script>
