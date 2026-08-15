@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import FavoritesView from '../views/FavoritesView.vue'
 import PreferencesView from '../views/PreferencesView.vue'
+import PlaceDetailView from '../views/PlaceDetailView.vue'
 
 import store from '../store'
 
@@ -13,52 +14,52 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
     },
     {
       path: '/favoritos',
       name: 'favorites',
       component: FavoritesView,
       meta: {
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/preferencias',
       name: 'preferences',
       component: PreferencesView,
       meta: {
-        requiresAuth: true
-      }
-    }
-  ]
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/lugar/:id',
+      name: 'detalle',
+      component: PlaceDetailView,
+      props: true,
+    },
+  ],
 })
 
-
-
-
 router.beforeEach((to) => {
-  const requiresAuth = to.matched.some(
-    record => record.meta.requiresAuth
-  )
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
-  const isAuthenticated =
-    store.getters['auth/isAuthenticated']
+  const isAuthenticated = store.getters['auth/isAuthenticated']
 
   if (requiresAuth && !isAuthenticated) {
     return {
       name: 'login',
       query: {
-        redirect: to.fullPath
-      }
+        redirect: to.fullPath,
+      },
     }
   }
 })
-
 
 export default router

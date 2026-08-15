@@ -71,3 +71,62 @@ Clonar el repositorio:
 
 ```bash
 https://orellananayaret.github.io/app-clima-vue/
+
+ # App de Clima - Módulo 7
+
+Aplicación SPA desarrollada con Vue 3 que permite
+consultar información climática y manejar usuarios
+mediante un sistema de autenticación simulado.
+
+## Autenticación
+
+El sistema utiliza usuarios simulados almacenados
+en el frontend.
+
+Al iniciar sesión, los datos del usuario se guardan
+en Vuex.
+
+Usuario de prueba:
+
+Correo:
+nayaret@email.com
+
+Contraseña:
+123456
+
+## Datos almacenados
+
+Cada usuario contiene:
+
+- Nombre
+- Correo electrónico
+- Lugares favoritos
+- Unidad de temperatura
+- Preferencia de tema
+
+## Rutas
+
+- `/` Inicio
+- `/login` Inicio de sesión
+- `/favoritos` Lugares favoritos
+- `/preferencias` Preferencias del usuario
+- `/lugar/:id` Detalle de lugar
+
+Las rutas `/favoritos` y `/preferencias` requieren
+que el usuario haya iniciado sesión.
+
+## Tecnologías
+
+- Vue 3
+- Vue Router
+- Vuex
+- JavaScript
+- HTML
+- CSS
+
+## Instalación
+
+Instalar dependencias:
+
+```bash
+npm install

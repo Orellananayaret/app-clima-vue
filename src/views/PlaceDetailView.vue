@@ -1,3 +1,4 @@
+
 <script>
 import { lugares } from '@/data/weatherData.js'
 
@@ -13,7 +14,6 @@ export default {
 
   data() {
     return {
-      lugares,
       unidad: 'C',
       mostrarInformacion: true
     }
@@ -21,47 +21,53 @@ export default {
 
   computed: {
     lugar() {
-      return this.lugares.find((lugar) => {
-        return lugar.id === Number(this.id)
-      })
+      return lugares.find(
+        lugar => lugar.id === Number(this.id)
+      )
     },
 
-    temperaturaMinima() {
-      if (!this.lugar) {
-        return 0
-      }
-
-      const temperaturas = this.lugar.pronostico.map((dia) => dia.minima)
-
-      return Math.min(...temperaturas)
+    isAuthenticated() {
+      return this.$store.getters['auth/isAuthenticated']
     },
 
     temperaturaMaxima() {
-      if (!this.lugar) {
-        return 0
-      }
+      if (!this.lugar) return 0
 
-      const temperaturas = this.lugar.pronostico.map((dia) => dia.maxima)
+      return Math.max(
+        ...this.lugar.pronostico.map(
+          dia => dia.maxima
+        )
+      )
+    },
 
-      return Math.max(...temperaturas)
+    temperaturaMinima() {
+      if (!this.lugar) return 0
+
+      return Math.min(
+        ...this.lugar.pronostico.map(
+          dia => dia.minima
+        )
+      )
     },
 
     temperaturaPromedio() {
-      if (!this.lugar) {
-        return 0
-      }
+      if (!this.lugar) return 0
 
-      const sumaTemperaturas = this.lugar.pronostico.reduce((acumulador, dia) => {
-        return acumulador + dia.maxima
-      }, 0)
+      const total =
+        this.lugar.pronostico.reduce(
+          (suma, dia) =>
+            suma + dia.maxima + dia.minima,
+          0
+        )
 
-      return Math.round(sumaTemperaturas / this.lugar.pronostico.length)
+      return Math.round(
+        total /
+        (this.lugar.pronostico.length * 2)
+      )
     },
 
     promedioHumedad() {
-      if (!this.lugar) {
-        return 0
-      }
+      if (!this.lugar) return 0
 
       return this.lugar.humedad
     }
@@ -70,18 +76,29 @@ export default {
   methods: {
     convertirTemperatura(temperatura) {
       if (this.unidad === 'F') {
-        return Math.round((temperatura * 9) / 5 + 32)
+        return Math.round(
+          (temperatura * 9) / 5 + 32
+        )
       }
 
       return temperatura
     },
 
     cambiarVisibilidad() {
-      this.mostrarInformacion = !this.mostrarInformacion
+      this.mostrarInformacion =
+        !this.mostrarInformacion
+    },
+
+    addFavorite() {
+      this.$store.dispatch(
+        'auth/addFavorite',
+        this.lugar.nombre
+      )
     }
   }
 }
 </script>
+
 
 <template>
   <main class="detail">
@@ -97,6 +114,13 @@ export default {
       class="detail__content"
     >
       <section class="detail-hero">
+
+        <button
+      v-if="isAuthenticated"
+      @click="addFavorite"
+    >
+      Agregar a favoritos
+    </button>
         <div>
           <p class="hero__eyebrow">
             {{ lugar.region }}
@@ -280,39 +304,6 @@ export default {
     </section>
   </main>
 
-  <button
-      v-if="isAuthenticated"
-      @click="addFavorite"
-    >
-      Agregar a favoritos
-    </button>
+
 </template>
-<script>
-export default {
-  name: 'PlaceDetailView',
 
-  data() {
-    return {
-      place: {
-        name: 'Santiago',
-        description: 'Clima de Santiago'
-      }
-    }
-  },
-
-  computed: {
-    isAuthenticated() {
-      return this.$store.getters['auth/isAuthenticated']
-    }
-  },
-
-  methods: {
-    addFavorite() {
-      this.$store.dispatch(
-        'auth/addFavorite',
-        this.place.name
-      )
-    }
-  }
-}
-</script>
