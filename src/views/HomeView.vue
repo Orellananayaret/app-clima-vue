@@ -1,19 +1,23 @@
 <script>
 import WeatherCard from '@/components/WeatherCard.vue'
 import { lugares } from '@/data/weatherData.js'
+import { getWeather } from '@/services/weatherService.js'
 
 export default {
   name: 'HomeView',
 
   components: {
-    WeatherCard
+    WeatherCard,
   },
 
   data() {
     return {
       lugares,
       busqueda: '',
-      unidad: 'C'
+      unidad: 'C',
+      climaApi: null,
+      cargando: false,
+      error: '',
     }
   },
 
@@ -31,18 +35,54 @@ export default {
           lugar.region.toLowerCase().includes(textoBuscado)
         )
       })
-    }
+    },
+
+    climaActual() {
+      if (!this.climaApi) {
+        return null
+      }
+
+      return {
+        id: this.climaApi.id,
+        nombre: this.climaApi.name,
+        region: this.climaApi.sys.country,
+        temperatura: this.climaApi.main.temp,
+        condicion: this.climaApi.weather[0].description,
+        icono: this.climaApi.weather[0].icon,
+        humedad: this.climaApi.main.humidity,
+        viento: this.climaApi.wind.speed * 3.6,
+      }
+    },
   },
 
   methods: {
-    buscarLugar() {
-      console.log('Buscando:', this.busqueda)
+    async buscarLugar() {
+      if (!this.busqueda) {
+        return
+      }
+
+      this.cargando = true
+      this.error = ''
+      this.climaApi = null
+
+      try {
+        const apiKey = import.meta.env.VITE_WEATHER_API_KEY
+
+        this.climaApi = await getWeather(this.busqueda, apiKey)
+
+        console.log('Clima recibido:', JSON.parse(JSON.stringify(this.climaApi)))
+      } catch (error) {
+        console.error('Error al obtener el clima:', error)
+        this.error = 'No se pudo encontrar esa ciudad.'
+      } finally {
+        this.cargando = false
+      }
     },
 
     limpiarBusqueda() {
       this.busqueda = ''
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -54,8 +94,8 @@ export default {
       <h1>Descubre el clima de Chile</h1>
 
       <p class="hero__description">
-        Revisa la temperatura actual, el pronóstico semanal y las estadísticas
-        de diferentes ciudades.
+        Revisa la temperatura actual, el pronóstico semanal y las estadísticas de diferentes
+        ciudades.
       </p>
     </section>
 
@@ -71,16 +111,9 @@ export default {
             placeholder="Ejemplo: Santiago"
           />
 
-          <button type="submit">
-            Buscar
-          </button>
+          <button type="submit">Buscar</button>
 
-          <button
-            v-show="busqueda"
-            type="button"
-            class="button-secondary"
-            @click="limpiarBusqueda"
-          >
+          <button v-show="busqueda" type="button" class="button-secondary" @click="limpiarBusqueda">
             Limpiar
           </button>
         </div>
@@ -90,20 +123,12 @@ export default {
         <p>Unidad de temperatura</p>
 
         <label>
-          <input
-            v-model="unidad"
-            type="radio"
-            value="C"
-          />
+          <input v-model="unidad" type="radio" value="C" />
           Celsius °C
         </label>
 
         <label>
-          <input
-            v-model="unidad"
-            type="radio"
-            value="F"
-          />
+          <input v-model="unidad" type="radio" value="F" />
           Fahrenheit °F
         </label>
       </div>
@@ -122,32 +147,17 @@ export default {
         </p>
       </div>
 
-      <div
-        v-if="lugaresFiltrados.length > 0"
-        class="weather-grid"
-      >
-        <WeatherCard
-          v-for="lugar in lugaresFiltrados"
-          :key="lugar.id"
-          :lugar="lugar"
-          :unidad="unidad"
-        />
+      <div v-if="climaActual" class="weather-grid">
+        <WeatherCard :lugar="climaActual" :unidad="unidad" />
       </div>
 
-      <div
-        v-else
-        class="empty-state"
-      >
+      <div v-else class="empty-state">
         <span>🔍</span>
         <h3>No se encontró el lugar</h3>
 
-        <p>
-          Intenta buscar otra ciudad o limpia el campo de búsqueda.
-        </p>
+        <p>Intenta buscar otra ciudad o limpia el campo de búsqueda.</p>
 
-        <button @click="limpiarBusqueda">
-          Mostrar todos los lugares
-        </button>
+        <button @click="limpiarBusqueda">Mostrar todos los lugares</button>
       </div>
     </section>
   </main>
