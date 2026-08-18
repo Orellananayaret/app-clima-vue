@@ -5,13 +5,13 @@ export default {
   props: {
     lugar: {
       type: Object,
-      required: true
+      required: true,
     },
 
     unidad: {
       type: String,
-      default: 'C'
-    }
+      default: 'C',
+    },
   },
 
   methods: {
@@ -21,8 +21,8 @@ export default {
       }
 
       return temperatura
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -35,7 +35,11 @@ export default {
       </div>
 
       <span class="weather-card__icon">
-        {{ lugar.icono }}
+        <img
+          class="weather-card__icon"
+          :src="`https://openweathermap.org/img/wn/${lugar.icono}@2x.png`"
+          :alt="lugar.condicion"
+        />
       </span>
     </div>
 
@@ -55,7 +59,7 @@ export default {
     <router-link
       :to="{
         name: 'detalle',
-        params: { id: lugar.id }
+        params: { id: lugar.nombre },
       }"
       class="weather-card__button"
     >

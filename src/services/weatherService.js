@@ -14,3 +14,19 @@ export const getWeather = async (city, apiKey) => {
 
   return response.data
 }
+
+export const getForecast = async (city, apiKey) => {
+  const response = await axios.get(
+    'https://api.openweathermap.org/data/2.5/forecast',
+    {
+      params: {
+        q: city,
+        appid: apiKey,
+        units: 'metric',
+        lang: 'es'
+      }
+    }
+  )
+
+  return response.data
+}
